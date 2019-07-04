@@ -1,0 +1,313 @@
+<?php
+// function.surec.php
+// Son güncelleme: 7 Nisan 2014
+// 2014-04-07: İlk program.
+
+function PGyilverileri($gostergeId, $yilimiz, &$VeriVar)
+{
+	$oq = mysql_query("select * from performansGostergeleri_hedefler WHERE GostergeId = '".$gostergeId."' and Baslangic_Yil = '".$yilimiz."' ORDER BY Baslangic_Ay ASC");
+	$ot = mysql_num_rows($oq);
+	$OncekiYil_EskiVeriler = 0;
+	$OncekiYil_ToplamGirilenVeriSayisi = 0;
+	if ($ot >= 1) { // önceki yıllara ait veri var, tablonun başına tek sütun olarak eklenecek
+		while ($e = mysql_fetch_object($oq)) {
+			$OncekiYil_HedefId = $e->id;
+			$OncekiYil_Baslangic_Yil = $e->Baslangic_Yil;
+			$Hedef = $e->Hedef;
+			$MaxMin = $e->MaxMin;
+			$Hedef2=$Hedef;		
+			$oqv = mysql_query("select * from performansGostergeleri_veriler WHERE HedefId = '".$OncekiYil_HedefId."' order by Parca ASC");
+			$oqvt = mysql_num_rows($oqv);
+			if ($oqvt >= 1) {
+				$OncekiYil_ToplamGirilenVeriSayisi = 0;
+				while ($es = mysql_fetch_object($oqv)) {
+					$OncekiYil_EskiVeriler += $es->Veri;
+					$OncekiYil_ToplamGirilenVeriSayisi++;
+				}
+				$VeriVar++;
+			}
+		}
+		
+		if ($OncekiYil_ToplamGirilenVeriSayisi != 0) 
+		{
+			$OncekiYil_EskiVeriler = round(($OncekiYil_EskiVeriler/$OncekiYil_ToplamGirilenVeriSayisi),2);
+			
+			$chart_veri_1oncekiyil = "['".$OncekiYil_Baslangic_Yil."', ".$OncekiYil_EskiVeriler.", ".$Hedef."],\n";
+		} else {
+			$chart_veri_1oncekiyil = "";
+		}
+		
+	}
+
+	return $chart_veri_1oncekiyil;
+}
+
+
+function eksen_degerleri_hesapla ($p_dizi1, $p_dizi2, $p_pay=1.05)
+{
+	$max1 = MaxBul($p_dizi1);
+	$max2 = MaxBul($p_dizi2);
+	if ($max1 < $max2)
+		$max = $max2;
+	else
+		$max = $max1;
+	$max = $max * $p_pay;
+
+	$min1 = MinBul($p_dizi1);
+	$min2 = MinBul($p_dizi2);
+	if ($min1 < $min2)
+		$min = $min1;
+	else
+		$min = $min2;
+	if ($min >= 0)
+		$min = 0;
+	else
+		$min = $min * $p_pay;
+
+	return array(0=>array("Min"=>$min,"Max"=>$max));
+}
+
+function bar_cizgi_grafik ($p_dizi, $p_hedef, $p_xeksen, $p_yeksen, $p_basyazi, $p_etiket, $p_hedef_etiket, $p_dosya,$kac_yil_var,$p_id=0) {
+	/* Create and populate the pData object */
+	$p_etiket=$p_yeksen;
+	$myData = new pData();
+	$myData->addPoints($p_dizi, $p_etiket);
+	$myData->addPoints($p_hedef, $p_hedef_etiket);
+
+	$myData->setAxisName(0,/*$p_yeksen*/"");
+	$myData->addPoints($p_xeksen,"Labels");
+	$myData->setSerieDescription("Labels","");
+	$myData->setAbscissa("Labels");
+	
+	/* Draw serie 1 in red with a 80% opacity */
+	$serieSettings = array("R"=>73,"G"=>140,"B"=>225,"Alpha"=>80);
+	
+	$myData->setPalette($p_etiket,$serieSettings);
+	
+	
+
+	/* Create the pChart object */
+	$myPicture = new pImage(900,320,$myData);
+	
+	if($p_id!=0){
+	/* resim haritasını dosyaya kaydediyor */
+	$myPicture-> initialiseImageMap("ImageMapBarChart",IMAGE_MAP_STORAGE_FILE,$p_id,"tmp");
+	}
+	/* Turn of Antialiasing */
+	$myPicture->Antialias = FALSE;
+
+	/* Add a border to the picture */
+	$myPicture->drawRectangle(0,0,899,309,array("R"=>250,"G"=>250,"B"=>250));
+
+	/* Write the chart title */
+	$myPicture->setFontProperties(array("FontName"=>"lib/pchart/fonts/calibri.ttf","FontSize"=>10));
+	$myPicture->drawText(260,30,$p_basyazi,array("FontSize"=>16,"Align"=>TEXT_ALIGN_BOTTOMMIDDLE));
+
+	/* Set the default font */
+	$myPicture->setFontProperties(array("FontName"=>"lib/pchart/fonts/calibri.ttf","FontSize"=>8));
+
+	/* Define the chart area */
+	$myPicture->setGraphArea(60,40,860,270);
+
+	/* Draw the scale Arka zemin rengi */
+
+	$AxisBoundaries = eksen_degerleri_hesapla ($p_dizi, $p_hedef);
+	$scaleSettings =
+array("GridR"=>200,"GridG"=>200,"GridB"=>200,"DrawSubTicks"=>TRUE,"Mode"=>SCALE_MODE_MANUAL,"ManualScale"=>$AxisBoundaries,"CycleBackground"=>TRUE);
+	$myPicture->drawScale($scaleSettings);
+
+	/* Write the chart legend sağ üst legentlar basılıyor */ 
+	//$myPicture->drawLegend(730,15,array("Style"=>LEGEND_NOBORDER,"Mode"=>LEGEND_HORIZONTAL));
+
+	/* Turn on shadow computing */
+	$myPicture->setShadow(TRUE,array("X"=>1,"Y"=>1,"R"=>0,"G"=>0,"B"=>0,"Alpha"=>10));
+
+	/* Draw the chart */
+	$myPicture->setShadow(TRUE,array("X"=>1,"Y"=>1,"R"=>0,"G"=>0,"B"=>0,"Alpha"=>10));
+
+	$settings
+=array("Gradient"=>TRUE,"GradientMode"=>GRADIENT_EFFECT_CAN,"DisplayPos"=>LABEL_POS_INSIDE,"DisplayValues"=>TRUE,"DisplayR"=>35,"DisplayG"=>92,"DisplayB"=>250,"DisplayShadow"=>TRUE,"Surrounding"=>10);
+
+
+
+	$myData->setSerieDrawable($p_hedef_etiket, FALSE);
+
+//	$myPicture->drawBarChart();
+$ky_ek='';
+if($kac_yil_var==1)
+	{
+$Palette = array("0"=>array("R"=>0,"G"=>70,"B"=>225,"Alpha"=>100),
+                 "1"=>array("R"=>73,"G"=>140,"B"=>225,"Alpha"=>100),
+                 "2"=>array("R"=>73,"G"=>140,"B"=>225,"Alpha"=>100),
+                 "3"=>array("R"=>73,"G"=>140,"B"=>225,"Alpha"=>100),
+                 "4"=>array("R"=>73,"G"=>140,"B"=>225,"Alpha"=>100),
+                 "5"=>array("R"=>73,"G"=>140,"B"=>225,"Alpha"=>100),
+                 "6"=>array("R"=>73,"G"=>140,"B"=>225,"Alpha"=>100),
+                 "7"=>array("R"=>73,"G"=>140,"B"=>225,"Alpha"=>100),
+                 "8"=>array("R"=>73,"G"=>140,"B"=>225,"Alpha"=>100),
+                 "9"=>array("R"=>73,"G"=>140,"B"=>225,"Alpha"=>100),
+                 "10"=>array("R"=>73,"G"=>140,"B"=>225,"Alpha"=>100),
+                 "11"=>array("R"=>73,"G"=>140,"B"=>225,"Alpha"=>100),
+                 "12"=>array("R"=>73,"G"=>140,"B"=>225,"Alpha"=>100),
+                 "13"=>array("R"=>73,"G"=>140,"B"=>225,"Alpha"=>100),
+                 "14"=>array("R"=>73,"G"=>140,"B"=>225,"Alpha"=>100));
+}else if($kac_yil_var==2)
+	{
+$Palette = array("0"=>array("R"=>0,"G"=>70,"B"=>225,"Alpha"=>100),
+                 "1"=>array("R"=>0,"G"=>70,"B"=>225,"Alpha"=>100),
+                 "2"=>array("R"=>73,"G"=>140,"B"=>225,"Alpha"=>100),
+                 "3"=>array("R"=>73,"G"=>140,"B"=>225,"Alpha"=>100),
+                 "4"=>array("R"=>73,"G"=>140,"B"=>225,"Alpha"=>100),
+                 "5"=>array("R"=>73,"G"=>140,"B"=>225,"Alpha"=>100),
+                 "6"=>array("R"=>73,"G"=>140,"B"=>225,"Alpha"=>100),
+                 "7"=>array("R"=>73,"G"=>140,"B"=>225,"Alpha"=>100),
+                 "8"=>array("R"=>73,"G"=>140,"B"=>225,"Alpha"=>100),
+                 "9"=>array("R"=>73,"G"=>140,"B"=>225,"Alpha"=>100),
+                 "10"=>array("R"=>73,"G"=>140,"B"=>225,"Alpha"=>100),
+                 "11"=>array("R"=>73,"G"=>140,"B"=>225,"Alpha"=>100),
+                 "12"=>array("R"=>73,"G"=>140,"B"=>225,"Alpha"=>100),
+                 "13"=>array("R"=>73,"G"=>140,"B"=>225,"Alpha"=>100),
+				 "14"=>array("R"=>73,"G"=>140,"B"=>225,"Alpha"=>100),
+                 "15"=>array("R"=>73,"G"=>140,"B"=>225,"Alpha"=>100));
+}else if($kac_yil_var==3)
+	{
+$Palette = array("0"=>array("R"=>0,"G"=>70,"B"=>225,"Alpha"=>100),
+                 "1"=>array("R"=>0,"G"=>70,"B"=>225,"Alpha"=>100),
+                 "2"=>array("R"=>0,"G"=>70,"B"=>225,"Alpha"=>100),
+                 "3"=>array("R"=>73,"G"=>140,"B"=>225,"Alpha"=>100),
+                 "4"=>array("R"=>73,"G"=>140,"B"=>225,"Alpha"=>100),
+                 "5"=>array("R"=>73,"G"=>140,"B"=>225,"Alpha"=>100),
+                 "6"=>array("R"=>73,"G"=>140,"B"=>225,"Alpha"=>100),
+                 "7"=>array("R"=>73,"G"=>140,"B"=>225,"Alpha"=>100),
+                 "8"=>array("R"=>73,"G"=>140,"B"=>225,"Alpha"=>100),
+                 "9"=>array("R"=>73,"G"=>140,"B"=>225,"Alpha"=>100),
+                 "10"=>array("R"=>73,"G"=>140,"B"=>225,"Alpha"=>100),
+                 "11"=>array("R"=>73,"G"=>140,"B"=>225,"Alpha"=>100),
+                 "12"=>array("R"=>73,"G"=>140,"B"=>225,"Alpha"=>100),
+                 "13"=>array("R"=>73,"G"=>140,"B"=>225,"Alpha"=>100),
+                 "14"=>array("R"=>73,"G"=>140,"B"=>225,"Alpha"=>100),
+                 "15"=>array("R"=>73,"G"=>140,"B"=>225,"Alpha"=>100),
+                 "16"=>array("R"=>73,"G"=>140,"B"=>225,"Alpha"=>100));
+}else if($kac_yil_var==4)
+	{
+$Palette = array("0"=>array("R"=>0,"G"=>70,"B"=>225,"Alpha"=>100),
+                 "1"=>array("R"=>0,"G"=>70,"B"=>225,"Alpha"=>100),
+                 "2"=>array("R"=>0,"G"=>70,"B"=>225,"Alpha"=>100),
+                 "3"=>array("R"=>0,"G"=>70,"B"=>225,"Alpha"=>100),
+                 "4"=>array("R"=>73,"G"=>140,"B"=>225,"Alpha"=>100),
+                 "5"=>array("R"=>73,"G"=>140,"B"=>225,"Alpha"=>100),
+                 "6"=>array("R"=>73,"G"=>140,"B"=>225,"Alpha"=>100),
+                 "7"=>array("R"=>73,"G"=>140,"B"=>225,"Alpha"=>100),
+                 "8"=>array("R"=>73,"G"=>140,"B"=>225,"Alpha"=>100),
+                 "9"=>array("R"=>73,"G"=>140,"B"=>225,"Alpha"=>100),
+                 "10"=>array("R"=>73,"G"=>140,"B"=>225,"Alpha"=>100),
+                 "11"=>array("R"=>73,"G"=>140,"B"=>225,"Alpha"=>100),
+                 "12"=>array("R"=>73,"G"=>140,"B"=>225,"Alpha"=>100),
+                 "13"=>array("R"=>73,"G"=>140,"B"=>225,"Alpha"=>100),
+                 "14"=>array("R"=>73,"G"=>140,"B"=>225,"Alpha"=>100),
+                 "15"=>array("R"=>73,"G"=>140,"B"=>225,"Alpha"=>100),
+                 "16"=>array("R"=>73,"G"=>140,"B"=>225,"Alpha"=>100),
+                 "17"=>array("R"=>73,"G"=>140,"B"=>225,"Alpha"=>100));
+}else if($kac_yil_var==5)
+	{
+$Palette = array("0"=>array("R"=>0,"G"=>70,"B"=>225,"Alpha"=>100),
+                 "1"=>array("R"=>0,"G"=>70,"B"=>225,"Alpha"=>100),
+                 "2"=>array("R"=>0,"G"=>70,"B"=>225,"Alpha"=>100),
+                 "3"=>array("R"=>0,"G"=>70,"B"=>225,"Alpha"=>100),
+                 "4"=>array("R"=>0,"G"=>70,"B"=>225,"Alpha"=>100),
+                 "5"=>array("R"=>73,"G"=>70,"B"=>225,"Alpha"=>100),
+                 "6"=>array("R"=>73,"G"=>140,"B"=>225,"Alpha"=>100),
+                 "7"=>array("R"=>73,"G"=>140,"B"=>225,"Alpha"=>100),
+                 "8"=>array("R"=>73,"G"=>140,"B"=>225,"Alpha"=>100),
+                 "9"=>array("R"=>73,"G"=>140,"B"=>225,"Alpha"=>100),
+                 "10"=>array("R"=>73,"G"=>140,"B"=>225,"Alpha"=>100),
+                 "11"=>array("R"=>73,"G"=>140,"B"=>225,"Alpha"=>100),
+                 "12"=>array("R"=>73,"G"=>140,"B"=>225,"Alpha"=>100),
+                 "13"=>array("R"=>73,"G"=>140,"B"=>225,"Alpha"=>100),
+                 "14"=>array("R"=>73,"G"=>140,"B"=>225,"Alpha"=>100),
+                 "15"=>array("R"=>73,"G"=>140,"B"=>225,"Alpha"=>100),
+                 "16"=>array("R"=>73,"G"=>140,"B"=>225,"Alpha"=>100),
+                 "17"=>array("R"=>73,"G"=>140,"B"=>225,"Alpha"=>100),
+                 "18"=>array("R"=>73,"G"=>140,"B"=>225,"Alpha"=>100));
+}else if($kac_yil_var==6)
+	{
+$Palette = array("0"=>array("R"=>0,"G"=>70,"B"=>225,"Alpha"=>100),
+                 "1"=>array("R"=>0,"G"=>70,"B"=>225,"Alpha"=>100),
+                 "2"=>array("R"=>0,"G"=>70,"B"=>225,"Alpha"=>100),
+                 "3"=>array("R"=>0,"G"=>70,"B"=>225,"Alpha"=>100),
+                 "4"=>array("R"=>0,"G"=>70,"B"=>225,"Alpha"=>100),
+                 "5"=>array("R"=>0,"G"=>70,"B"=>225,"Alpha"=>100),
+                 "6"=>array("R"=>73,"G"=>140,"B"=>225,"Alpha"=>100),
+                 "7"=>array("R"=>73,"G"=>140,"B"=>225,"Alpha"=>100),
+                 "8"=>array("R"=>73,"G"=>140,"B"=>225,"Alpha"=>100),
+                 "9"=>array("R"=>73,"G"=>140,"B"=>225,"Alpha"=>100),
+                 "10"=>array("R"=>73,"G"=>140,"B"=>225,"Alpha"=>100),
+                 "11"=>array("R"=>73,"G"=>140,"B"=>225,"Alpha"=>100),
+                 "12"=>array("R"=>73,"G"=>140,"B"=>225,"Alpha"=>100),
+                 "13"=>array("R"=>73,"G"=>140,"B"=>225,"Alpha"=>100),
+                 "14"=>array("R"=>73,"G"=>140,"B"=>225,"Alpha"=>100),
+                 "15"=>array("R"=>73,"G"=>140,"B"=>225,"Alpha"=>100),
+                 "16"=>array("R"=>73,"G"=>140,"B"=>225,"Alpha"=>100),
+                 "17"=>array("R"=>73,"G"=>140,"B"=>225,"Alpha"=>100),
+                 "18"=>array("R"=>73,"G"=>140,"B"=>225,"Alpha"=>100),
+				"19"=>array("R"=>73,"G"=>140,"B"=>225,"Alpha"=>100));
+}
+	
+	
+	$TextSettings = array("R"=>0,"G"=>0,"B"=>0,"Angle"=>90,"FontSize"=>16, "Align"=>TEXT_ALIGN_MIDDLEMIDDLE);
+	$myPicture->drawText(10,160,$p_yeksen,$TextSettings); // SOL KISIM POZİSYON BELİRLE
+
+	$myPicture->drawBarChart(array("OverrideColors"=>$Palette, "DisplayValues"=>FALSE, "RecordImageMap"=>TRUE));
+
+	$myData->setSerieDrawable($p_hedef_etiket, TRUE);
+	$myData->setSerieDrawable($p_etiket, FALSE);
+
+	$myPicture->drawlineChart ();
+	$myPicture->drawPlotChart();
+	
+	
+
+	/* 0 çizgisi */
+	 $myPicture->drawThreshold(0,array ("Ticks"=>0, "R"=>0, "G"=>0, "B"=>0));
+	// $myPicture->drawThreshold(0,143,55,72,TRUE,TRUE);
+
+	/* Render the picture (choose the best way) */
+	$myPicture->render($p_dosya);
+	
+	$html="";
+	$html .= sprintf("<img src='%s' id='%s' alt='' class='pChartPicture'/>",$p_dosya,$p_id);
+	$html .="<script>";
+	$html .= sprintf("addImage('%s','picturemap%s', 'tmp/%s.map');",$p_id,$p_id,$p_id);
+	$html .= "</script>";
+	return $html; 
+	} // bar_cizgi_grafik ()
+
+function MaxBul($deger)
+{
+	$max=$deger["0"];
+	foreach($deger as $s)
+	{	
+		if($s!=VOID)
+		if($max<$s)
+		{
+		$max=$s;
+		}
+	}
+	return $max;
+}
+function MinBul($deger)
+{
+	$min=$deger["0"];
+	foreach($deger as $s)
+	{
+		if($s!=VOID)
+		if($min>$s)
+		{
+		$min=$s;
+		}
+	}
+
+return $min;
+}
+
+?>

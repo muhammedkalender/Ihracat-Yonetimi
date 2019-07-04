@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE yml_products SYSTEM "proforma.dtd">
+<yml_products>
+    <proforma>
+        <factory>OsmanlıPark</factory>
+		<adress>Test mahallesi. deneme caddesi.</adress>
+		<country>Türkiye</country>
+		<tel>+90 (216) 504 2 503</tel>
+		<mobile>+90 (-) 000-00-00</mobile>
+		<fax>+90 (216) 504 2 503</fax>
+		<email>info@osmanlı.com.tr</email>
+		<attn>Tufan Uludoğan</attn>
+		<from>Osmanlı Yönetim Kurulu</from>
+		<url>http://www.osmanlipark.com.tr/</url>
+        <logo>http://www.osmanlipark.com.tr/tr_TR/images/elegantia-logo.png</logo>
+
+
+        <products>
+            <product >
+                <productNo>106</productNo>
+				<available>true</available>
+				<url>http://www.osmanlipark.com.tr/tr_TR/kinetix-oyun-grubu-106.html</url>
+                <price>0</price>
+                <currency>$</currency>
+                <categoryId>-</categoryId>
+                <picture>http://www.osmanlipark.com.tr/Images/optimize/kinetix-metal-cocuk-oyun-grubu/KT-01.jpg</picture>
+                <delivery>true</delivery>
+                <name>Kinetix Oyun Grubu</name>
+                <description>Kinetix Oyun Grubu</description>
+            </product>
+           <product >
+                <productNo>110</productNo>
+				<available>true</available>
+				<url>http://www.osmanlipark.com.tr/tr_TR/robot-oyun-grubu-110.html</url>
+                <price>0</price>
+                <currency>$</currency>
+                <categoryId>-</categoryId>
+                <picture>http://www.osmanlipark.com.tr/Images/icerik/1.METAL-POLIETILEN/5.Robot/R-01.jpg</picture>
+                <delivery>true</delivery>
+                <name>Robot Oyun Grubu</name>
+                <description>Robot Oyun Grubu</description>
+            </product><product >
+                <productNo>111</productNo>
+				<available>true</available>
+				<url>http://www.osmanlipark.com.tr/tr_TR/tren-oyun-grubu-111.html</url>
+                <price>0</price>
+                <currency>$</currency>
+                <categoryId>-</categoryId>
+                <picture>http://www.osmanlipark.com.tr/Images/icerik/1.METAL-POLIETILEN/6.Tren/T-01.jpg</picture>
+                <delivery>true</delivery>
+                <name>Tren Oyun Grubu</name>
+                <description>Tren Oyun Grubu</description>
+            </product>
+			<product >
+                <productNo>112</productNo>
+				<available>true</available>
+				<url>http://www.osmanlipark.com.tr/tr_TR/orman-oyun-grubu-112.html</url>
+                <price>0</price>
+                <currency>$</currency>
+                <categoryId>-</categoryId>
+                <picture>http://www.osmanlipark.com.tr/Images/icerik/1.METAL-POLIETILEN/7.Orman/O-01.jpg</picture>
+                <delivery>true</delivery>
+                <name>Orman Oyun Grubu</name>
+                <description>Orman Oyun Grubu</description>
+            </product>
+			<product >
+                <productNo>113</productNo>
+				<available>true</available>
+				<url>http://www.osmanlipark.com.tr/tr_TR/gemi-oyun-grubu-113.html</url>
+                <price>0</price>
+                <currency>$</currency>
+                <categoryId>-</categoryId>
+                <picture>http://www.osmanlipark.com.tr/Images/icerik/1.METAL-POLIETILEN/8.Gemi/G-01.jpg</picture>
+                <delivery>true</delivery>
+                <name>Gemi Oyun Grubu</name>
+                <description>Gemi Oyun Grubu</description>
+            </product>
+			
+        </products>      
+    </proforma>
+</yml_products>

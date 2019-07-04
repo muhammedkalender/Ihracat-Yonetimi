@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE yml_products SYSTEM "proforma.dtd">
+<yml_products>
+    <proforma>
+        <factory>Viscotex</factory>
+		<adress>Test mahallesi. bilmemne caddesi.</adress>
+		<country>Türkiye</country>
+		<tel>+90 (216) 504 2 503</tel>
+		<mobile>+90 (-) 000-00-00</mobile>
+		<fax>+90 (216) 504 2 503</fax>
+		<email>info@viscotex.com.tr</email>
+		<attn>Tufan Uludoğan</attn>
+		<from>Visco Yönetim Kurulu</from>
+		<url>http://www.viscotex.com.tr/</url>
+        <logo>http://viscotex.com.tr/en/wp-content/uploads/2016/03/viscotex-cooperate-logo-300x138.png</logo>
+
+
+        <products>
+            <product >
+                <productNo>12341</productNo>
+				<available>true</available>
+				<url>http://viscotex.com.tr/tr/urun/aloe-vera-yatak/</url>
+                <price>370</price>
+                <currency>$</currency>
+                <categoryId>101</categoryId>
+                <picture>http://viscotex.com.tr/tr/wp-content/uploads/2016/04/viscotex-aloe-vera-mattress-2.jpg</picture>
+                <delivery>true</delivery>
+                <name>Aloe Vera Yatak</name>
+                <description>Aloe Vera Yatak 90 x 90 x 20 cm</description>
+            </product>
+            <product >
+                <productNo>12342</productNo>
+				<available>true</available>
+				<url>http://viscotex.com.tr/tr/urun/aloe-vera-yatak/</url>
+                <price>380</price>
+                <currency>$</currency>
+                <categoryId>101</categoryId>
+                <picture>http://viscotex.com.tr/tr/wp-content/uploads/2016/04/viscotex-aloe-vera-mattress-2.jpg</picture>
+                <delivery>true</delivery>
+                <name>Aloe Vera Yatak</name>
+                <description>Aloe Vera Yatak 110 x 90 x 20 cm</description>
+            </product>
+			<product >
+                <productNo>12343</productNo>
+				<available>true</available>
+				<url>http://viscotex.com.tr/tr/urun/aloe-vera-yatak/</url>
+                <price>390</price>
+                <currency>$</currency>
+                <categoryId>101</categoryId>
+                <picture>http://viscotex.com.tr/tr/wp-content/uploads/2016/04/viscotex-aloe-vera-mattress-2.jpg</picture>
+                <delivery>true</delivery>
+                <name>Aloe Vera Yatak</name>
+                <description>Aloe Vera Yatak 140 x 190 x 20 cm</description>
+            </product>
+			<product >
+                <productNo>12344</productNo>
+				<available>true</available>
+				<url>http://viscotex.com.tr/tr/urun/aloe-vera-yatak/</url>
+                <price>400</price>
+                <currency>$</currency>
+                <categoryId>101</categoryId>
+                <picture>http://viscotex.com.tr/tr/wp-content/uploads/2016/04/viscotex-aloe-vera-mattress-2.jpg</picture>
+                <delivery>true</delivery>
+                <name>Aloe Vera Yatak</name>
+                <description>Aloe Vera Yatak 190 x 190 x 20 cm</description>
+            </product>
+			<product >
+                <productNo>12345</productNo>
+				<available>true</available>
+				<url>http://viscotex.com.tr/tr/urun/aloe-vera-yatak/</url>
+                <price>410</price>
+                <currency>$</currency>
+                <categoryId>101</categoryId>
+                <picture>http://viscotex.com.tr/tr/wp-content/uploads/2016/04/viscotex-aloe-vera-mattress-2.jpg</picture>
+                <delivery>true</delivery>
+                <name>Aloe Vera Yatak</name>
+                <description>Aloe Vera Yatak 160 x 200 x 20 cm</description>
+            </product>
+			
+        </products>      
+    </proforma>
+</yml_products>
